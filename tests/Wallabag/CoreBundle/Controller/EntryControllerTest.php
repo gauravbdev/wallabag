@@ -40,6 +40,9 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertContains('login', $client->getResponse()->headers->get('location'));
     }
 
+    /**
+     * @group NetworkCalls
+     */
     public function testQuickstart()
     {
         $this->logInAs('empty');
@@ -87,6 +90,9 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertCount(1, $crawler->filter('form[name=entry]'));
     }
 
+    /**
+     * @group NetworkCalls
+     */
     public function testPostNewViaBookmarklet()
     {
         $this->logInAs('admin');
@@ -132,7 +138,7 @@ class EntryControllerTest extends WallabagCoreTestCase
     }
 
     /**
-     * This test will require an internet connection.
+     * @group NetworkCalls
      */
     public function testPostNewOk()
     {
@@ -170,6 +176,9 @@ class EntryControllerTest extends WallabagCoreTestCase
         $client->getContainer()->get('craue_config')->set('store_article_headers', 0);
     }
 
+    /**
+     * @group NetworkCalls
+     */
     public function testPostWithMultipleAuthors()
     {
         $url = 'https://www.liberation.fr/planete/2017/04/05/donald-trump-et-xi-jinping-tentative-de-flirt-en-floride_1560768';
@@ -230,6 +239,9 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertContains('/view/', $client->getResponse()->getTargetUrl());
     }
 
+    /**
+     * @group NetworkCalls
+     */
     public function testPostNewOkUrlExistWithAccent()
     {
         $this->logInAs('admin');
@@ -266,7 +278,7 @@ class EntryControllerTest extends WallabagCoreTestCase
     }
 
     /**
-     * This test will require an internet connection.
+     * @group NetworkCalls
      */
     public function testPostNewOkUrlExistWithRedirection()
     {
@@ -304,7 +316,7 @@ class EntryControllerTest extends WallabagCoreTestCase
     }
 
     /**
-     * This test will require an internet connection.
+     * @group NetworkCalls
      */
     public function testPostNewThatWillBeTagged()
     {
@@ -431,7 +443,7 @@ class EntryControllerTest extends WallabagCoreTestCase
     }
 
     /**
-     * This test will require an internet connection.
+     * @group NetworkCalls
      */
     public function testReload()
     {
@@ -1055,6 +1067,9 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group NetworkCalls
+     */
     public function testNewEntryWithDownloadImagesEnabled()
     {
         $this->downloadImagesEnabled = true;
@@ -1384,6 +1399,7 @@ class EntryControllerTest extends WallabagCoreTestCase
 
     /**
      * @dataProvider dataForLanguage
+     * @group NetworkCalls
      */
     public function testLanguageValidation($url, $expectedLanguage)
     {
@@ -1415,7 +1431,7 @@ class EntryControllerTest extends WallabagCoreTestCase
     }
 
     /**
-     * This test will require an internet connection.
+     * @group NetworkCalls
      */
     public function testRestrictedArticle()
     {
