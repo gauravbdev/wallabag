@@ -2,6 +2,7 @@
 
 namespace Tests\Wallabag\CoreBundle\Controller;
 
+use DateTimeImmutable;
 use Tests\Wallabag\CoreBundle\WallabagCoreTestCase;
 use Wallabag\CoreBundle\Entity\Config;
 use Wallabag\CoreBundle\Entity\Entry;
@@ -822,13 +823,25 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->logInAs('admin');
         $client = $this->getClient();
 
+        $em = $this->getEntityManager();
+
+        $today = new \DateTimeImmutable();
+        $tomorrow = $today->add(new \DateInterval('P1D'));
+        $yesterday = $today->sub(new \DateInterval('P1D'));
+
+        $entry = new Entry($this->getLoggedInUser());
+        $entry->setUrl('http://0.0.0.0/testFilterOnCreationDate');
+        $entry->setCreatedAt(\DateTime::createFromImmutable($yesterday)); // setCreatedAt does not support DateTimeImmutable
+        $em->persist($entry);
+        $em->flush();
+
         $crawler = $client->request('GET', '/unread/list');
 
         $form = $crawler->filter('button[id=submit-filter]')->form();
 
         $data = [
-            'entry_filter[createdAt][left_date]' => date('d/m/Y'),
-            'entry_filter[createdAt][right_date]' => date('d/m/Y', strtotime('+1 day')),
+            'entry_filter[createdAt][left_date]' => $today->format('Y-m-d'),
+            'entry_filter[createdAt][right_date]' => $tomorrow->format('Y-m-d'),
         ];
 
         $crawler = $client->submit($form, $data);
@@ -836,8 +849,8 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertCount(5, $crawler->filter('li.entry'));
 
         $data = [
-            'entry_filter[createdAt][left_date]' => date('d/m/Y'),
-            'entry_filter[createdAt][right_date]' => date('d/m/Y'),
+            'entry_filter[createdAt][left_date]' => $today->format('Y-m-d'),
+            'entry_filter[createdAt][right_date]' => $today->format('Y-m-d'),
         ];
 
         $crawler = $client->submit($form, $data);
@@ -845,8 +858,8 @@ class EntryControllerTest extends WallabagCoreTestCase
         $this->assertCount(5, $crawler->filter('li.entry'));
 
         $data = [
-            'entry_filter[createdAt][left_date]' => '01/01/1970',
-            'entry_filter[createdAt][right_date]' => '01/01/1970',
+            'entry_filter[createdAt][left_date]' => '1970-01-01',
+            'entry_filter[createdAt][right_date]' => '1970-01-01',
         ];
 
         $crawler = $client->submit($form, $data);
